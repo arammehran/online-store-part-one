@@ -12,14 +12,27 @@ from rest_framework import views
 from store import models as store_models, serializers as store_serializers
 
 
-@api_view(['GET', 'POST'])
-def product_list(request):
-    if request.method == 'GET':
+# @api_view(['GET', 'POST'])
+# def product_list(request):
+#     if request.method == 'GET':
+#         queryset = Product.objects.select_related('collection').all()
+#         serializer = ProductSerializer(
+#             queryset, many=True, context={'request': request})
+#         return Response(serializer.data)
+#     elif request.method == 'POST':
+#         serializer = ProductSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class ProductList(views.APIView):
+    def get(self, request):
         queryset = Product.objects.select_related('collection').all()
         serializer = ProductSerializer(
             queryset, many=True, context={'request': request})
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+    def post(self, request):
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
