@@ -12,20 +12,7 @@ from rest_framework import views
 from store import models as store_models, serializers as store_serializers
 
 
-# @api_view(['GET', 'POST'])
-# def product_list(request):
-#     if request.method == 'GET':
-#         queryset = Product.objects.select_related('collection').all()
-#         serializer = ProductSerializer(
-#             queryset, many=True, context={'request': request})
-#         return Response(serializer.data)
-#     elif request.method == 'POST':
-#         serializer = ProductSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-class ProductList(views.APIView):
+class ProductListView(views.APIView):
     def get(self, request):
         queryset = Product.objects.select_related('collection').all()
         serializer = ProductSerializer(
@@ -39,20 +26,30 @@ class ProductList(views.APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def product_detail(request, id):
-    product = get_object_or_404(Product, pk=id)
-    if request.method == 'GET':
-        serializer = ProductSerializer(product)
+class ProductDetailView(views.APIView):
+
+    def get_product(self, id):
+        product = get_object_or_404(Product, pk=id)
+        return product
+
+    def get(self, request, id):
+        serializer = ProductSerializer(self.get_product(id=id))
         return Response(serializer.data)
-    elif request.method == 'PUT':
-        serializer = ProductSerializer(product, data=request.data)
+    
+    def put(self, request, id):
+        serializer = ProductSerializer(self.get_product(id=id), data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-    elif request.method == 'DELETE':
+    
+    def delete(self, request, id):
+        product = self.get_product(id=id)
         if product.orderitems.count() > 0:
-            return Response({'error': 'Product cannot be deleted because it is associated with an order item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response(
+                {'error': 'Product cannot be deleted because it is associated with an order item.'
+                 }, 
+                 status=status.HTTP_405_METHOD_NOT_ALLOWED
+                 )
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

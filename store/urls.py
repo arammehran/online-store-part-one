@@ -5,8 +5,8 @@ from . import views
 
 # URLConf
 urlpatterns = [
-    path('products/', views.product_list),
-    path('products/<int:id>/', views.product_detail),
+    path('products/', views.ProductListView.as_view()),
+    path('products/<int:id>/', views.ProductDetailView.as_view()),
     path('collections/', views.collection_list),
     path('customers', include([
         path('', views.CustomerViewSet.as_view()),
