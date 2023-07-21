@@ -114,3 +114,7 @@ class OrderAdmin(admin.ModelAdmin):
     autocomplete_fields = ['customer']
     inlines = [OrderItemInline]
     list_display = ['id', 'placed_at', 'customer']
+
+@admin.register(models.Review)
+class ReviewAdmin(admin.ModelAdmin):
+    pass

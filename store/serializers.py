@@ -1,5 +1,5 @@
 from decimal import Decimal
-from store.models import Product, Collection, Customer
+from store.models import Product, Collection, Customer, Review
 from rest_framework import serializers
 
 
@@ -30,3 +30,14 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['id', 'user_id', 'phone', 'birth_date', 'membership']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'date', 'name', 'description', 'product']
+        extra_kwargs = {"product": {"read_only": True}}
+
+    def create(self, validated_data):
+        validated_data['product_id'] = self.context.get('product_id')
+        return self.Meta.model.objects.create(**validated_data)
