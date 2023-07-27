@@ -118,3 +118,11 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(models.Review)
 class ReviewAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    pass

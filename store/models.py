@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator
 from django.contrib import admin
 from django.conf import settings
 from django.db import models
+from uuid import uuid4
 
 
 class Promotion(models.Model):
@@ -62,6 +63,7 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
+        permissions = [('view_history', 'Can view history')]
 
     @admin.display(ordering='user__first_name')
     def first_name(self):
@@ -108,13 +110,17 @@ class Address(models.Model):
 
 
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField()
+    quantity = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+
+    class Meta:
+        unique_together = [['cart', 'product']]
 
 
 class Review(models.Model):
