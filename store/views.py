@@ -159,3 +159,4 @@ class OrderViewSet(ModelViewSet):
         customer_id = store_models.Customer.objects.only(
             'id').get(user__id=user.id)
         return store_models.Order.objects.filter(customer_id=customer_id)
+    
